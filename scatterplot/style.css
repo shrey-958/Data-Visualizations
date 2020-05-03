@@ -1,0 +1,15 @@
+body{
+   font-family: Quicksand;
+}
+
+#tooltip{
+    background-color: rgb(179, 243, 243);
+    padding-left:10px;
+    padding-right: 10px;
+    border-radius: 10px;
+    position: absolute;
+    box-shadow:  4px 3px 3px 0px rgba(0,0,0,0.75);;
+}
+#title{
+    margin-bottom: 15px;
+}
