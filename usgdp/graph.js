@@ -15,14 +15,19 @@ const graph  = svg.append('g')
 
     const y = d3.scaleLinear()
         .range([0,graphHeight])
-    const x = d3.scaleBand()
+    const x = d3.scaleTime()
         .range([0, graphWidth])
-        .paddingInner(0.1)
-        .paddingOuter(0.1);
+        
+
+       
+        
+   
+   
     
 var data_main = []
 var years = []
 var gdp = []
+
 
 
 const xAxisGroup = graph.append('g')
@@ -37,41 +42,26 @@ d3.json('https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/mas
 
     return item[0]
             })
+
+           
         gdp = data.data.map(item => item[1])
 
-        var onlyYears = data.data.map(function(item) {
-            var quarter;
-            var temp = item[0].substring(5, 7);
-            
-            if(temp === '01') {
-              quarter = 'Q1';
-            }
-            else if (temp === '04'){
-              quarter = 'Q2';
-            }
-            else if(temp === '07') {
-              quarter = 'Q3';
-            }
-            else if(temp ==='10') {
-              quarter = 'Q4';
-            }
-        
-            return item[0].substring(0, 4) + ' ' + quarter
-          });
-        
+        var minDate = data.data[0][0].substr(0,4);
+        minDate = new Date(minDate);
+    var maxDate = data.data[data.data.length - 1][0].substr(0,4);
+        maxDate = new Date(maxDate);
+           
+          
         y.domain([d3.max(gdp),0])
-        x.domain(years.map(d => d))
-        console.log(x.bandwidth())
-        console.log(data_main)
-        console.log(years)
-        console.log(gdp)
-        console.log(y(gdp[8]))
-        console.log(onlyYears)
-
+        x.domain([minDate, maxDate])
+        
+      
+          
         
         const rects = graph.selectAll('rects')
             .data(data_main)
 
+            console.log(data_main.map(d => [d[0].split('-')[0], d[1]]))
             rects.attr('width', x.bandwidth)
             .attr('height', d => graphHeight - y(d[1]))
             .attr('fill', 'orange')
@@ -80,24 +70,29 @@ d3.json('https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/mas
 
             rects.enter()
             .append('rect')
-            .attr('width', x.bandwidth)
+            .attr('width', graphWidth / data_main.length)
             .attr('height', d => graphHeight - y(d[1]))
             .attr('fill', 'orange')
-            .attr('x', d => x(d[0]))
+            .attr('x', (d,i) => i * (graphWidth / data_main.length))
             .attr('y', d => y(d[1]))
 
-            const xAxis = d3.axisBottom(x);
+            const xAxis = d3.axisBottom(x)
+                
             const yAxis = d3.axisLeft(y)
                 .ticks(5)
                     .tickFormat(d => d );
 
                     xAxisGroup.call(xAxis);
                     yAxisGroup.call(yAxis);
-                
+
+                    yAxisGroup.selectAll('text')
+                    .attr('font-size', 15);
                     xAxisGroup.selectAll('text')
-                    .attr('transform', 'rotate(-90)')
+                    .attr('transform', 'rotate(-20)')
+
                     .attr('text-anchor', 'end')
-                    .attr('fill', 'purple');
+                    .attr('fill', 'purple')
+                    .attr('font-size', 15);
         
 
         
