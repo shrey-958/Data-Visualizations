@@ -41,12 +41,13 @@ d3.json('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/mas
       });
 
       const tip = d3.tip()
-    .attr('id', 'tooltip')
+      .attr("class", "tooltip")
+      .attr('id', 'tooltip')
     .attr('class', 'card')
     .html(d => {
-        let content = `<p>${d.Name}, ${d.Nationality}</p>`
+        let content = `<p><b>${d.Name}</b>, ${d.Nationality}</p>`
         content += `<p>Time : ${d.Time.toTimeString().slice(3,8)}, Year : ${d.Year.getFullYear()}</p>`
-        content += `<p>${d.Doping}</p>`
+        content += `<p><b>${d.Doping}</p></b>`
         return content
     })
     
@@ -77,16 +78,31 @@ const handlemouseout = (d,i,n) => {
 
       console.log(x.domain())
 
+      graph.append('text')
+    .attr('transform', 'rotate(-90)')
+    .attr('x', -250)
+    .attr('y', -80)
+    .style('font-size', 24)
+    .text('Time in Minutes');
+
       const circles = graph.selectAll('circles')
         .data(data)
+        .attr('class', 'dot')
         .attr('cx', d => x(d.Year) )
         .attr('cy', d => y(d.Time))
+        .attr("data-xvalue", function(d){
+            return d.Year;
+          })
+          .attr("data-yvalue", function(d){
+            return d.Time;
+          })
         .attr('r',8)
         .attr('fill', d =>  d.Doping === "" ? '#0d6aff' : '#ff6200')
         .attr('stroke', 'black')
 
     circles.enter()
       .append('circle')
+      .attr('class', 'dot')
       .attr('cx', d => x(d.Year))
         .attr('cy', d => y(d.Time))
         .attr('r',8)
@@ -100,6 +116,42 @@ const handlemouseout = (d,i,n) => {
             tip.hide(d, n[i])
             handlemouseout(d,i,n)
             })
+
+            yAxisGroup.selectAll('text')
+            .attr('fill', 'black')
+            .attr('font-size', 15);
+            xAxisGroup.selectAll('text')
+            .attr('text-anchor', 'end')
+            .attr('fill', 'black')
+            .attr('font-size', 12);
+
+     
+            var legend1 = graph.append('g')
+            .attr('transform', 'translate('+(graphWidth - 150)+', '+ ( 100) +')')
+            
+            legend1.append('rect')
+            .attr('height', 16)
+            .attr('width', 16)
+            .attr('fill', '#ff6200')
+            
+            legend1.append('text')
+            .attr('id', 'legend')
+            .attr('transform', 'translate(18,14)')
+            .text('Riders with doping allegations')
+          
+          var legend2 = graph.append('g')
+            .attr('transform', 'translate('+(graphWidth - 150)+', '+ ( 125) +')')
+            
+            legend2.append('rect')
+            .attr('height', 16)
+            .attr('width', 16)
+            .attr('fill', '#0d6aff')
+            
+            legend2.append('text')
+            .attr('transform', 'translate(18,14)')
+            .text('No doping allegations')
+            
+         
         
       
 })
