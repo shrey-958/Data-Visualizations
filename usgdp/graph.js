@@ -29,7 +29,6 @@ var years = []
 var gdp = []
 
 
-
 const xAxisGroup = graph.append('g')
                                 .attr('transform', `translate(0, ${graphHeight})`);
         const yAxisGroup = graph.append('g');
@@ -42,6 +41,32 @@ d3.json('https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/mas
 
     return item[0]
             })
+            const tip = d3.tip()
+    .attr('id', 'tooltip')
+    .html(d => {
+        let content = `<div class="year">${d[0].split('-')[0]}</div>`
+        var q = 0;
+        switch(d[0].split('-')[1]){
+            case "01":
+                q = 1;
+                break;
+            case "04":
+                q = 2;
+                break;
+            case "07":
+                q = 3;
+                break;
+            case "10":
+                q = 4;
+                break;
+        }
+        content += `<div class="quarter">Q ${q}</div>`
+        content += `<div class="gdp_val">GDP - ${d[1]}</div>`
+
+        return content
+    })
+
+graph.call(tip)
 
            
         gdp = data.data.map(item => item[1])
@@ -54,7 +79,18 @@ d3.json('https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/mas
           
         y.domain([d3.max(gdp),0])
         x.domain([minDate, maxDate])
-        
+        const handlemouseover = (d,i,n) =>{
+            d3.select(n[i])
+                .attr('fill', 'red')
+                .style("cursor", "pointer"); 
+
+        }
+        const handlemouseout = (d,i,n) =>{
+            d3.select(n[i])
+                .attr('fill', 'orange')
+                .style("cursor", "default"); 
+
+        }
       
           
         
@@ -75,6 +111,14 @@ d3.json('https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/mas
             .attr('fill', 'orange')
             .attr('x', (d,i) => i * (graphWidth / data_main.length))
             .attr('y', d => y(d[1]))
+            .on('mouseover', (d,i,n) => {
+                tip.show(d, n[i])
+                handlemouseover(d,i,n)
+                })
+            .on('mouseout', (d,i,n) => {
+                tip.hide(d, n[i])
+                handlemouseout(d,i,n)
+                })
 
             const xAxis = d3.axisBottom(x)
                 
