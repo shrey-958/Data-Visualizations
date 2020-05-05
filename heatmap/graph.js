@@ -26,12 +26,14 @@ const y = d3.scaleBand().domain(months).range([ 0, graphHeight ]);
 const colour = d3.scaleLinear()
     .range([1,0])
 
+
+
 const xAxisGroup = graph.append('g')
     .attr('transform', `translate(0, ${graphHeight})`)
     .attr('id', 'x-axis');    
 const yAxisGroup = graph.append('g')
     .attr('id', 'y-axis');
-
+    
 
 d3.json('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/global-temperature.json')
     .then(data => {
@@ -48,7 +50,7 @@ d3.json('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/mas
     .html(d => {
         let content = `<div>${d.year} - ${months[d.month - 1]}</div>`
         var finalTemp = (baseTemp + d.variance).toFixed(2)
-        content += `<div>${finalTemp} &#8451;</div>`
+        content += `<div><b>${finalTemp}</b> &#8451;</div>`
         
         return content
     })
@@ -58,19 +60,25 @@ graph.call(tip)
 
        
         colour.domain([ minTemp, maxTemp])
-        console.log(d3.interpolateRdYlBu(colour(baseTemp - 2)))
-        console.log(y(months[1])) 
+        
+
+       
+        
+        
+       
         x.domain(d3.extent(data.monthlyVariance, d => d.year ))
         const xAxis = d3.axisBottom(x).tickFormat(d3.format('d')).ticks(20);
         const yAxis = d3.axisLeft(y);
         const rectWidth = graphWidth/(data.monthlyVariance.length)
-        console.log('len ' + data.monthlyVariance.length)
+        
         const rectHeight = graphHeight/12
-        console.log(rectWidth, rectHeight)
-        console.log(y(months[3]))
-
+        
         xAxisGroup.call(xAxis);
         yAxisGroup.call(yAxis);
+        xAxisGroup.selectAll('text')
+            .attr('class', 'year-axis')
+        yAxisGroup.selectAll('text')
+            .attr('class', 'month-axis')
         const rects = graph.selectAll('rects')
             .data(data.monthlyVariance)
             const handlemouseover = (d,i,n) =>{
@@ -87,25 +95,70 @@ graph.call(tip)
                     
     
             }
+            var legend = svg.append("g")
+            .classed("legend", true)
+            .attr("id", "legend")
+            
+        
+        legend.append("g")
+        .data(data)
+          .selectAll("rect")
+          .attr("fill", function(d, i){return colour(d[0])})
+            .attr('x', 1)
+            .attr('y', 1 )
+            .attr('width', 1)
+            .attr('height', 1)
+            
 
+          legend.enter().append("rect")
+            .attr("fill", function(d, i){return colour(d[0])})
+            .attr('x', 1)
+            .attr('y', 1 )
+            .attr('width', 1)
+            .attr('height', 1)
+            
+        
+       
 
-        rects.attr('x', d => x(d.year))
+        rects.attr('class', 'cell')
+            .attr('data-month',function(d){
+            return d.month;
+          })
+            .attr('data-year',function(d){
+            return d.year;
+          })
+             .attr('data-temp',function(d){
+            return data.baseTemperature + d.variance;
+          })
+            .attr('x', d => x(d.year))
             .attr('y', d => y(months[d.month - 1]) )
             .attr('width', rectWidth )
             .attr('height', rectHeight)
             .attr('fill', d => d3.interpolateRdYlBu( colour(baseTemp + d.variance )))
             .on('mouseover', (d,i,n) => {
                 tip.show(d, n[i])
+                tip.attr("data-year", d.year);
                 handlemouseover(d,i,n)
                 })
             .on('mouseout', (d,i,n) => {
                 tip.hide(d, n[i])
+                tip.attr("data-year", d.year);
                 handlemouseout(d,i,n)
                 })
            
 
         rects.enter()
             .append('rect')
+            .attr('data-month',function(d){
+                return d.month - 1;
+              })
+              .attr('data-year',function(d){
+                return d.year;
+              })
+              .attr('data-temp',function(d){
+                return data.baseTemperature + d.variance;
+              })
+            .attr('class', 'cell')
             .attr('x', d => x(d.year) + 1)
             .attr('y', d => y(months[d.month - 1]) )
             .attr('width', rectWidth * 15 )
@@ -117,6 +170,7 @@ graph.call(tip)
                 })
             .on('mouseout', (d,i,n) => {
                 tip.hide(d, n[i])
+                
                 handlemouseout(d,i,n)
                 })
             
