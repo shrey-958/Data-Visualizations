@@ -173,6 +173,16 @@ graph.call(tip)
                 
                 handlemouseout(d,i,n)
                 })
-            
+            graph.append('text')
+                .attr('transform', 'rotate(-90)')
+                .attr('x', -280)
+                .attr('y', -80)
+                .style('font-size', 24)
+                .text('Months');
+            graph.append('text')
+                .attr('x', graphHeight + 10)
+                .attr('y', graphWidth/2 - 10)
+                .style('font-size', 24)
+                .text('Years');
 
     })

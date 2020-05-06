@@ -6,7 +6,12 @@ body{
      font-size: 150%;
      
  }
- 
+ #title{
+     margin-left: 35%;
+ }
+ #description{
+    margin-left: 45%;
+}
 #tooltip{
     background-color: rgb(34, 33, 33);
     color: white;
