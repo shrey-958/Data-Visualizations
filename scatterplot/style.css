@@ -8,8 +8,11 @@ body{
     padding-right: 10px;
     border-radius: 10px;
     position: absolute;
-    box-shadow:  4px 3px 3px 0px rgba(0,0,0,0.75);;
+    box-shadow:  4px 3px 3px 0px rgba(0,0,0,0.75);
+    font-weight : bold;
 }
 #title{
     margin-bottom: 15px;
+    font-weight : bold;
+    color : #46c768;
 }
